@@ -3,14 +3,21 @@ from concurrent.futures import ThreadPoolExecutor
 import icmplib
 
 
+# Local modules
+import bin.helper_functions as hf
+
+
 # Classes
 class TracerouteCollecter(object):
-    def __init__(self, targets: list, workers: int = 10):
-        self.targets = targets
+    def __init__(self, workers: int = 10):
         self.workers = workers
 
 
     def run(self) -> list:
+        ## Get targets (done each measurement cycle)
+        self.targets = hf.get_targets()
+
+        ## Run measurement in a threaded way
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
             results = executor.map(self._traceroute, self.targets)
 

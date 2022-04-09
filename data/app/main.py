@@ -1,7 +1,4 @@
-#!/usr/bin/env
-
-# Modules
-
+#!/usr/bin/env python
 
 # Local artefacts
 from bin.traceroute import TracerouteCollecter
@@ -13,14 +10,10 @@ if __name__ == "__main__":
     ## Get instruction
     args = hf.get_instructions()
 
-    ## Get targets
-    targets = hf.get_targets(args=args)
-
-    ## Perform measurements
-    if targets:
-        tracerouter = TracerouteCollecter(targets=targets)
-        measurements = tracerouter.run()
-
-        print(measurements)
+    ## Create traceroute collector
+    tracerouter = TracerouteCollecter()
+    
+    ## Start exporter
+    hf.start_exporter(exporter=tracerouter, is_once=args.once)
 
 
