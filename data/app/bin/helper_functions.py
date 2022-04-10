@@ -85,7 +85,7 @@ def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101, m
 
                 except (KeyError, UnboundLocalError):
                     ## Add traceroute counts
-                    exported_metrics = Gauge("traceroute_hop_counts", "number of hops towards destination host", ["target"])
+                    exported_metrics = Gauge("traceroute_hop_count", "number of hops towards destination host", ["target"])
                     exported_metrics.labels(measurement[0]).set(value=measurement[1])
 
                     ## Add traceroute collection duration
