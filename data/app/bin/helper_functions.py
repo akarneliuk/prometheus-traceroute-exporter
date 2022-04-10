@@ -1,3 +1,4 @@
+# (c)2022, Karneliuk.com
 # Modules
 from argparse import ArgumentParser
 import re
@@ -18,10 +19,11 @@ def get_instructions():
     )
 
     parser.add_argument(
-        "-t", "--targets",
-        type=str,
+        "-i", "--interval",
+        type=int,
+        default=60,
         required=False,
-        help="Comma-separted list of targets to run tracroute against.",
+        help="Time interval between consequent measurements.",
     )
 
     parser.add_argument(
@@ -31,10 +33,25 @@ def get_instructions():
         help="Specify if you want to run the execution once.",
     )
 
+    parser.add_argument(
+        "-t", "--targets",
+        type=str,
+        required=False,
+        help="Comma-separted list of targets to run tracroute against.",
+    )
+
+    parser.add_argument(
+        "-w", "--workers",
+        type=int,
+        default=10,
+        required=False,
+        help="Amount of workers for threaded traceroute collector.",
+    )
+
     args = parser.parse_args()
 
     if args.targets:
-        os.environ["TRACEROUTE_TARGETS"] = args.targets
+        os.environ["TRACEROUTE_TARGETS"] = re.sub(r'^\s+(\S+)$', r'\1', args.targets)
 
     return args
 
@@ -48,9 +65,6 @@ def get_targets() -> list:
 
 
 def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101, measure_interval: int = 60) -> None:
-    ## Convert seconds to nanoseconds
-    measure_interval *= 100000000
-
     ## Non-exporter mode: Test run of traceroutes to test reachability
     if is_once:
         measurements = exporter.run()
@@ -61,18 +75,24 @@ def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101, m
         start_http_server(port=exporter_port)
 
         while True:
-            time_start = time.time_ns()
+            time_start = time.time()
             measurements = exporter.run()
 
             for measurement in measurements:
                 try:
                     exported_metrics.labels(measurement[0]).set(value=measurement[1])
+                    collection_duration.set(value=(time.time() - time_start))
 
                 except (KeyError, UnboundLocalError):
-                    exported_metrics = Gauge("target_hop_counts", "number of hops towards destination host", ["target"])
+                    ## Add traceroute counts
+                    exported_metrics = Gauge("traceroute_hop_counts", "number of hops towards destination host", ["target"])
                     exported_metrics.labels(measurement[0]).set(value=measurement[1])
 
-            time_sleep = time_start + measure_interval - time.time_ns()
+                    ## Add traceroute collection duration
+                    collection_duration = Gauge("traceroute_duration_seconds", "duration of the collection of all traceroutes")
+                    collection_duration.set(value=(time.time() - time_start))
+
+            time_sleep = time_start + measure_interval - time.time()
 
             if time_sleep > 0:
                 time.sleep(time_sleep)

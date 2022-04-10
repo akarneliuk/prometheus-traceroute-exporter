@@ -1,3 +1,4 @@
+# (c)2022, Karneliuk.com
 # Modules
 from concurrent.futures import ThreadPoolExecutor
 import icmplib

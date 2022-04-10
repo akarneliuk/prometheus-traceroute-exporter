@@ -8,4 +8,6 @@ services:
       - "9101:9101"
     command:
       - "--targets=karneliuk.com,github.com,nokia.com"
+      - "--workers=5"
+      - "--interval=30"
 ...
