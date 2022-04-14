@@ -18,5 +18,4 @@ jobs:
         # Login to registry
         echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
         # Push image
-        docker tag 
         docker push ghcr.io/akarneliuk/traceroute-exporter:latest
