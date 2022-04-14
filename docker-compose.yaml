@@ -2,7 +2,7 @@
 version: "3.9"
 services:
   traceroute_exporter:
-    image: "akarneliuk/traceroute-exporter:latest"
+    image: "ghcr.io/akarneliuk/traceroute-exporter:latest"
     privileged: true
     ports:
       - "9101:9101"
