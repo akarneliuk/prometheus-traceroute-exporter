@@ -13,17 +13,15 @@ class TracerouteCollecter(object):
     def __init__(self, workers: int = 10):
         self.workers = workers
 
-
     def run(self) -> list:
-        ## Get targets (done each measurement cycle)
+        # Get targets (done each measurement cycle)
         self.targets = hf.get_targets()
 
-        ## Run measurement in a threaded way
+        # Run measurement in a threaded way
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
             results = executor.map(self._traceroute, self.targets)
 
         return [(entry[0], len(entry[1])) for entry in results]
-
 
     def _traceroute(self, target) -> tuple:
         return target, icmplib.traceroute(address=target, count=5)
