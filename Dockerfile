@@ -4,7 +4,7 @@ LABEL MAINTAINER="anton@karneliuk.com"
 LABEL GITHUB="https://github.com/akarneliuk/prometheus-traceroute-exporter.git"
 
 # Install packages
-RUN apk update -y && apk add curl -y 
+RUN apk update && apk add curl
 
 # Install dependencies
 COPY data/requirements.txt /requirements.txt
