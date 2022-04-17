@@ -4,6 +4,16 @@ services:
   traceroute_exporter:
     image: "ghcr.io/akarneliuk/traceroute-exporter:latest"
     privileged: true
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-f"
+        - "http://localhost:9101"
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     ports:
       - "9101:9101"
     command:
