@@ -3,6 +3,9 @@ FROM python:alpine
 LABEL MAINTAINER="anton@karneliuk.com"
 LABEL GITHUB="https://github.com/akarneliuk/prometheus-traceroute-exporter.git"
 
+# Install packages
+RUN apk update -y && apk add curl -y 
+
 # Install dependencies
 COPY data/requirements.txt /requirements.txt
 RUN pip3 install -r /requirements.txt
