@@ -12,10 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/akarneliuk/traceroute-exporter:latest
+      run: docker build . --file builds/$(uname -m)/Dockerfile --tag ghcr.io/akarneliuk/traceroute-exporter:$(uname -m)
     - name: Publish to registry
       run: |
         # Login to registry
         echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
         # Push image
-        docker push ghcr.io/akarneliuk/traceroute-exporter:latest
+        docker push ghcr.io/akarneliuk/traceroute-exporter:$(uname -m)

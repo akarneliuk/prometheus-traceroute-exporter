@@ -2,20 +2,20 @@
 This repostitory contains Python implementation of the traceroute exproter for Prometheus.
 
 ## Docker Image
-You can pull the pre-build image of the Python tracroute exporter for Prometheus from:
+You can pull the pre-build image of the Python tracroute exporter for Prometheus from the GitHub Container Registry (`x86_64` and `armv7l` ):
 ```
-docker pull ghcr.io/akarneliuk/traceroute-exporter:latest
+docker pull ghcr.io/akarneliuk/traceroute-exporter:$(uname -m)
 ```
 
 Once pulled, launch it in the background as:
 ```
-docker container run -d -p 9101:9101 --privileged ghcr.io/akarneliuk/traceroute-exporter:latest --targets=xxx1,xxx2
+docker container run -d -p 9101:9101 --privileged ghcr.io/akarneliuk/traceroute-exporter:$(uname -m) --targets=xxx1,xxx2
 ```
 where `xxx1` and `xxx2` are the IP addresses or FQDNs of the target nodes
 
-Alternatievly, launch the provided `docker-compose` file (see example attached):
+Alternatievly, launch the provided `docker-compose` file incorporating system architecture type (see example attached):
 ```
-docker-compose up -d
+PLATFORM=$(uname -m) docker-compose up -d
 ```
 
 ## More details
