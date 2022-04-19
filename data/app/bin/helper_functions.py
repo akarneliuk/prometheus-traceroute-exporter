@@ -5,6 +5,7 @@ import re
 import os
 from prometheus_client import start_http_server, Gauge
 import time
+import logging
 
 
 # Functions
@@ -58,11 +59,7 @@ def get_instructions():
 
 
 def get_targets() -> list:
-    try:
-        return os.getenv("TRACEROUTE_TARGETS").split(",")
-
-    except:
-        return None
+    return os.getenv("TRACEROUTE_TARGETS").split(",")
 
 
 def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101,
@@ -70,7 +67,7 @@ def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101,
     # Non-exporter mode: Test run of traceroutes to test reachability
     if is_once:
         measurements = exporter.run()
-        print(measurements)
+        logging.info(measurements)
 
     # Exporter mode
     else:
@@ -83,21 +80,29 @@ def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101,
             for measurement in measurements:
                 try:
                     exported_metrics.labels(measurement[0]).set(value=measurement[1])
+                    logging.warning(f"Gauge 'exported_metrics' with lable '{measurement[0]}' doesn't yet exist.")
+
                     collection_duration.set(value=(time.time() - time_start))
+                    logging.warning("Gauge 'collection_duration' doesn't yet exist.")
 
                 except (KeyError, UnboundLocalError):
                     # Add traceroute counts
                     exported_metrics = Gauge("traceroute_hop_count",
                                              "number of hops towards destination host",
                                              ["target"])
+                    logging.info("Gauge 'exported_metrics' is created.")
+
                     exported_metrics.labels(measurement[0]).set(value=measurement[1])
 
                     # Add traceroute collection duration
                     collection_duration = Gauge("traceroute_duration_seconds",
                                                 "duration of the collection of all traceroutes")
+                    logging.info("Gauge 'collection_duration' is created.")
+
                     collection_duration.set(value=(time.time() - time_start))
 
             time_sleep = time_start + measure_interval - time.time()
 
             if time_sleep > 0:
+                logging.info(f"Sleeping for {time_sleep} till next measurement.")
                 time.sleep(time_sleep)
