@@ -7,11 +7,13 @@ import bin.helper_functions as hf
 import logging
 
 
+# Logger
+logging.basicConfig(format="%(asctime)s %(message)s")
+log = logging.getLogger(__name__)
+
+
 # Body
 if __name__ == "__main__":
-    # Get logging
-    logging.basicConfig(format="%(asctime)s %(message)s")
-
     # Get instruction
     args = hf.get_instructions()
 

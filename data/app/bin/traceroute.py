@@ -9,16 +9,20 @@ import logging
 import bin.helper_functions as hf
 
 
+# Logger
+log = logging.getLogger(__name__)
+
+
 # Classes
 class TracerouteCollecter(object):
     def __init__(self, workers: int = 10):
         self.workers = workers
-        logging.info("Instantiated object to collect traceroutes.")
+        log.info("Instantiated object to collect traceroutes.")
 
     def run(self) -> list:
         # Get targets (done each measurement cycle)
         self.targets = hf.get_targets()
-        logging.info("Loaded list of destinations for the traceroute.")
+        log.info("Loaded list of destinations for the traceroute.")
 
         # Run measurement in a threaded way
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
@@ -31,5 +35,5 @@ class TracerouteCollecter(object):
             return target, icmplib.traceroute(address=target, count=5)
 
         except icmplib.exceptions.NameLookupError as e:
-            logging.error(f"Path 0 for {target}. Error: {e}")
+            log.error(f"Path 0 for {target}. Error: {e}")
             return target, 0

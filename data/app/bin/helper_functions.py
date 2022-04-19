@@ -8,6 +8,11 @@ import time
 import logging
 
 
+# Logger
+logging.basicConfig(format="%(asctime)s %(message)s")
+log = logging.getLogger(__name__)
+
+
 # Functions
 def get_instructions():
     parser = ArgumentParser()
@@ -67,7 +72,7 @@ def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101,
     # Non-exporter mode: Test run of traceroutes to test reachability
     if is_once:
         measurements = exporter.run()
-        logging.info(measurements)
+        log.info(measurements)
 
     # Exporter mode
     else:
@@ -97,5 +102,5 @@ def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101,
             time_sleep = time_start + measure_interval - time.time()
 
             if time_sleep > 0:
-                logging.info(f"Sleeping for {time_sleep} till next measurement.")
+                log.info(f"Sleeping for {time_sleep} till next measurement.")
                 time.sleep(time_sleep)
