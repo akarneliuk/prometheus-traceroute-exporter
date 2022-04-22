@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 # (c)2022, Karneliuk.com
+# Modules
+import logging
+
 
 # Local artefacts
-from bin.traceroute import TracerouteCollecter
 import bin.helper_functions as hf
-import logging
+from bin.static_exporter import StaticTargetExporter
+from bin.dynamic_exporter import DynamicTargetExporter
+
+
+# Variables
+exporter_port = 9089
+path_default_page = "./templates/index.j2"
 
 
 # Logger
@@ -17,8 +25,13 @@ if __name__ == "__main__":
     # Get instruction
     args = hf.get_instructions()
 
-    # Create traceroute collector
-    tracerouter = TracerouteCollecter(workers=args.workers)
+    # Start Prometheus exporter
+    if args.dynamic:
+        exporter = DynamicTargetExporter(args=args, application_port=exporter_port,
+                                         path_default_page=path_default_page)
 
-    # Start exporter
-    hf.start_exporter(exporter=tracerouter, is_once=args.once, measure_interval=args.interval)
+    else:
+        exporter = StaticTargetExporter(args=args, application_port=exporter_port,
+                                        path_default_page=path_default_page)
+
+    exporter.start()

@@ -1,0 +1,13 @@
+<html>
+    <head>
+        <title>Prometheus Traceroute Exporter by Karneliuk.com</title>
+    </head>
+    <body>
+        <h1>Prometheus Traceroute Exporter</h1>
+        <p>Default metrics are at <a href="/metrics">metrics</a></p>
+{%- if args.dynamic %}
+        <p>Active probes to targets are at <a href="/probe">probe</a></p>
+        <p>Hint: use <i>probe?target=address</i> synax to run traceroute test to a destination, where <i>address</i> is FQDN or an IPv4/IPv6 address</p>
+{%- endif %}
+    </body>
+</html>

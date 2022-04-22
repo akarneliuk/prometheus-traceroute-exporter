@@ -3,8 +3,6 @@
 from argparse import ArgumentParser
 import re
 import os
-from prometheus_client import start_http_server, Gauge
-import time
 import logging
 
 
@@ -22,6 +20,13 @@ def get_instructions():
         action="store_true",
         default=False,
         help="Test execution with predefined test data.",
+    )
+
+    parser.add_argument(
+        "-D", "--dynamic",
+        action="store_true",
+        default=False,
+        help="Start exporter in a mode retrieving targets from Prometheus.",
     )
 
     parser.add_argument(
@@ -61,46 +66,3 @@ def get_instructions():
                                                   args.targets)
 
     return args
-
-
-def get_targets() -> list:
-    return os.getenv("TRACEROUTE_TARGETS").split(",")
-
-
-def start_exporter(exporter, is_once: bool = False, exporter_port: int = 9101,
-                   measure_interval: int = 60) -> None:
-    # Non-exporter mode: Test run of traceroutes to test reachability
-    if is_once:
-        measurements = exporter.run()
-        log.info(measurements)
-
-    # Exporter mode
-    else:
-        start_http_server(port=exporter_port)
-
-        while True:
-            time_start = time.time()
-            measurements = exporter.run()
-
-            for measurement in measurements:
-                try:
-                    exported_metrics.labels(measurement[0]).set(value=measurement[1])
-                    collection_duration.set(value=(time.time() - time_start))
-
-                except (KeyError, UnboundLocalError):
-                    # Add traceroute counts
-                    exported_metrics = Gauge("traceroute_hop_count",
-                                             "number of hops towards destination host",
-                                             ["target"])
-                    exported_metrics.labels(measurement[0]).set(value=measurement[1])
-
-                    # Add traceroute collection duration
-                    collection_duration = Gauge("traceroute_duration_seconds",
-                                                "duration of the collection of all traceroutes")
-                    collection_duration.set(value=(time.time() - time_start))
-
-            time_sleep = time_start + measure_interval - time.time()
-
-            if time_sleep > 0:
-                log.info(f"Sleeping for {time_sleep} till next measurement.")
-                time.sleep(time_sleep)

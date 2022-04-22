@@ -3,13 +3,11 @@
 from concurrent.futures import ThreadPoolExecutor
 import icmplib
 import logging
-
-
-# Local modules
-import bin.helper_functions as hf
+import os
 
 
 # Logger
+logging.basicConfig(format="%(asctime)s %(message)s")
 log = logging.getLogger(__name__)
 
 
@@ -21,7 +19,7 @@ class TracerouteCollecter(object):
 
     def run(self) -> list:
         # Get targets (done each measurement cycle)
-        self.targets = hf.get_targets()
+        self.targets = os.getenv("TRACEROUTE_TARGETS").split(",")
         log.info("Loaded list of destinations for the traceroute.")
 
         # Run measurement in a threaded way
