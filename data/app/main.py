@@ -11,7 +11,7 @@ from bin.dynamic_exporter import DynamicTargetExporter
 
 
 # Variables
-exporter_port = 9089
+exporter_port = 9101
 path_default_page = "./templates/index.j2"
 
 
