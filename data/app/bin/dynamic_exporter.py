@@ -64,7 +64,7 @@ class DynamicTargetExporter(object):
         httpd.serve_forever()
 
     def _middleware_wsgi(self, environ, start_response):
-        if environ["PATH_INFO"] == "/probe":
+        if environ["PATH_INFO"] in {"/probe", "/metrics"}:
             query_parameters = parse_qs(environ["QUERY_STRING"])
 
             if query_parameters:
