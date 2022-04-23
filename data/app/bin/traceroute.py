@@ -34,4 +34,4 @@ class TracerouteCollecter(object):
 
         except icmplib.exceptions.NameLookupError as e:
             log.error(f"Path 0 for {target}. Error: {e}")
-            return target, 0
+            return target, []
