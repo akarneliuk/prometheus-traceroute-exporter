@@ -8,7 +8,8 @@ RUN apk update && apk add curl
 
 # Install dependencies
 COPY data/requirements.txt /requirements.txt
-RUN pip install --index-url=https://www.piwheels.org/simple --no-cache-dir -r /requirements.txt
+RUN pip install pip --upgrade
+RUN pip install --no-cache-dir -r /requirements.txt
 
 # Copy app
 RUN mkdir /etc/traceroute-exporters
